@@ -66,7 +66,7 @@ def unit_timevarying_cox(df, features=[]):
     ctv.print_summary(3)
 
 
-def cox_proportional_hazards_timevarying(df):
+def cox_hazards_timevarying(df):
     df_subset = df[['user_id', 'start', 'stop', 'richness', 'evenness', 'event']]
     df_nan = df_subset[(df_subset.isnull().any(axis=1)) & (df_subset.event == 1)]
 
@@ -81,12 +81,20 @@ def cox_proportional_hazards_timevarying(df):
 
 
 def main():
-    relap_users_dates, recov_users_dates = pd.read_csv('relapsed_users_st_en_dates.csv'), pd.read_csv('recovered_users_st_en_dates.csv')
+    # reading recovery start date and last announcement of recovery for users who have't mentioned their relapse
+    recov_users_dates = pd.read_csv('data/recovered_users_st_en_dates.csv')
+    # reading recovery start date and date of relapse for users who have mentioned their relapse
+    relap_users_dates = pd.read_csv('data/relapsed_users_st_en_dates.csv')
+    # calculate the number of months of being in recovery for both groups of users
     relapsed_days, censored_days = get_recovery_period(recov_users_dates, relap_users_dates)
+    # draw the Kaplan Meier Estimator
     KM_estimator(relapsed_days, censored_days)
 
-    df = pd.read_csv('addicts_activity_over_recovery.csv')
-    cox_proportional_hazards_timevarying(df)
+    # reading the file reporting the group activity of users accross Reddit, richness: the number of subreddit a user
+    # contributes over the course of recovery, and evenness, how evenly she/he is engaging in those groups.
+    multi_group_activity = pd.read_csv('data/addicts_activity_over_recovery.csv')
+    # applying the extended cox hazard model to identify the effect of factors individually and together on risk of relapse
+    cox_hazards_timevarying(multi_group_activity)
 
 
 if __name__ == '__main__':
