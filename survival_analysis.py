@@ -92,7 +92,7 @@ def main():
 
     # reading the file reporting the group activity of users accross Reddit, richness: the number of subreddit a user
     # contributes over the course of recovery, and evenness, how evenly she/he is engaging in those groups.
-    multi_group_activity = pd.read_csv('data/addicts_activity_over_recovery.csv')
+    multi_group_activity = pd.read_csv('data/activity_during_recovery.csv')
     # applying the extended cox hazard model to identify the effect of factors individually and together on risk of relapse
     cox_hazards_timevarying(multi_group_activity)
 
